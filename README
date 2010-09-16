@@ -1,0 +1,8 @@
+Project created for controlling Nvidia 3D Vision glasses by a python daemon.
+
+We have to merge our two projects:
+- usbdir from kunguz (http://code.google.com/p/pyusbir/source/browse/trunk/source/lib/usbir.py)
+- shutters_nv from Magestik (http://github.com/magestik/TuxStereoViewer/blob/master/shutters_nv.py)
+
+Maybe we should merge the two projects, then we'll make the daemon part.
+The project has to separe the daemon from the controller, so we could add some other 3D glasses support.
