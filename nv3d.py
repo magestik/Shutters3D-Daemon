@@ -33,7 +33,7 @@ class shutters:
 		
 		if len(self.endpoints) == 0:
 			print 'NVIDIA stereo controller does NOT have required firmware!'
-			if not os.path.exists((self.firm_dir+self.firm_name):
+			if not os.path.exists(self.firm_dir+self.firm_name):
 				self.download_firmware()
 			self.upload_firmware()
 			self.release_device()

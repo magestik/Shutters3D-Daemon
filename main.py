@@ -20,21 +20,23 @@ class daemon:
 			self.client, address = self.socket.accept()
 			print "Connection from ", address
 			#self.client.send(data)
-			
-			while 1:
-				data = self.client.recv(512)
-				if (data == 'q' or data == 'Q'):
-					self.client.close()
-					break;
+			self.synchro()
+
+	def synchro(self):
+		while 1:
+			data = self.client.recv(512)
+			if (data == 'q' or data == 'Q'):
+				self.client.close()
+				break;
+			else:
+				if(data == 'l' or data == 'L'):
+					#self.glasses.set_eye(0)
+					i=1
+				elif(data == 'r' or data == 'R'):
+					#self.glasses.set_eye(1)
+					i=1
 				else:
-					if(data == 'l' or data == 'L'):
-						#self.glasses.set_eye(0)
-						i=1
-					elif(data == 'r' or data == 'R'):
-						#self.glasses.set_eye(1)
-						i=1
-					else:
-						print "ERROR"
+					print "ERROR"
 
 if __name__ == "__main__":
 	d = daemon()
