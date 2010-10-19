@@ -38,7 +38,7 @@ class DaemonDBUS(dbus.service.Object):
 			return "right"
 
 	@dbus.service.method('org.stereo3d.shutters')
-	def quit(self):
+	def stop(self):
 		GUI.notify("3D signal terminated")
 		self.glasses.__del__()
 		print "Releasing glasses ..."
@@ -66,6 +66,6 @@ if __name__ == "__main__":
 	GUI.Show(False)
 	
 	DBusGMainLoop(set_as_default=True)
-	myservice = DaemonDBUS()
+	daemon = DaemonDBUS()
 
 	app.MainLoop()
