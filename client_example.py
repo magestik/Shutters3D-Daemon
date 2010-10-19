@@ -1,13 +1,15 @@
-# TCP client example
-import socket
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect(("localhost", 5000))
+#######################
+ 
+# consumeservice.py
+# consumes a method in a service on the dbus
+ 
+import dbus
+ 
+bus = dbus.SessionBus()
+helloservice = bus.get_object('org.stereo3d.shutters', '/org/stereo3d/shutters')
+start = helloservice.get_dbus_method('start', 'org.stereo3d.shutters')
+swap = helloservice.get_dbus_method('swap', 'org.stereo3d.shutters')
+#hello = helloservice.get_dbus_method('swap', 'org.stereo3d.shutters')
 
-while 1:
-	data = raw_input ( "SEND (TYPE q or Q to Quit):" )
-	if (data <> 'Q' and data <> 'q'):
-		client_socket.send(data)
-	else:
-		client_socket.send(data)
-		client_socket.close()
-		break;
+print start()
+print swap()
