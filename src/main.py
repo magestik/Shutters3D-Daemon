@@ -4,16 +4,15 @@
 import sys, time
 
 # Nvidia 3D Vision
-#import nv3d
+import nv3d
 
 # DBUS
 import dbus
 import dbus.service
 from dbus.mainloop.glib import DBusGMainLoop
 
-# GUI
-import pynotify
-import wx
+# LOOP
+import gobject
 
 class DaemonDBUS(dbus.service.Object):
 	def __init__(self):
@@ -23,7 +22,6 @@ class DaemonDBUS(dbus.service.Object):
 	@dbus.service.method('org.stereo3d.shutters')
 	def start(self):
 		try:
-			GUI.notify("3D signal detected")
 			self.glasses = nv3d.shutters()
 			self.glasses.set_rate(120)
 			print "Initialising glasses ..."
@@ -55,7 +53,6 @@ class DaemonDBUS(dbus.service.Object):
 	@dbus.service.method('org.stereo3d.shutters')
 	def stop(self):
 		try:
-			GUI.notify("3D signal terminated")
 			self.glasses.__del__()
 			print "Releasing glasses ..."
 			success = 1
@@ -65,28 +62,9 @@ class DaemonDBUS(dbus.service.Object):
 		
 		return success
 
-class interface(wx.Frame):
-	def __init__(self, parent):
-		wx.Frame.__init__(self, parent, style=wx.FRAME_NO_TASKBAR | wx.NO_FULL_REPAINT_ON_RESIZE)
-		pynotify.init("Shutters3D Daemon")
-		
-		self.tbicon = wx.TaskBarIcon()
-		icon = wx.Icon('3D.png', wx.BITMAP_TYPE_PNG)
-		self.tbicon.SetIcon(icon, '')
-		
-		self.Show(True)
-
-   	def notify(self, msg):
-		msg = pynotify.Notification("Nvidia 3D Vision", msg, "3D.png")
-		msg.show()
-
 if __name__ == "__main__":
-	app = wx.App(False)
-	
-	GUI = interface(None)
-	GUI.Show(False)
-	
-	DBusGMainLoop(set_as_default=True)
 	daemon = DaemonDBUS()
-
-	app.MainLoop()
+	
+	loop = gobject.MainLoop()
+	print 'Listening'
+	loop.run()
