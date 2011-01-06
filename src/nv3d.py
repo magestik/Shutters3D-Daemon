@@ -1,11 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import sys, os, time
+
 try:
-	import sys, os, time
 	import usb.core, usb.util
 	import urllib
-	from array import array
+	#from array import array
 except ImportError, err:
 	print "couldn't load module. %s" % (err)
 	sys.exit()
@@ -167,7 +168,6 @@ class shutters:
 			
 	def download_firmware(self): # Download and extract firmware from nvidia.com
 		print "Starting firmware upgrade ..."
-		dest	= os.path.expanduser("~") + '/.nvidia3D/' # Where the firmware has to be
 		temp 	= '/tmp/nvidia3D/' # Work directory
 		name 	= 'NVIDIA_3D_Vision_v258.96_driver.exe'
 		path	= temp + name
@@ -191,13 +191,13 @@ class shutters:
 		
 		# Extracting the fw file from the sys
 		print "\nExtracting nvstusb.fw ..."
-		os.system(sys.path[0]+"/extractfw nvstusb.sys") # you need to compile extractfw
+		os.system("extractfw nvstusb.sys")
 		
 		# Moving the firmware where it has to be
 		if not os.path.exists(self.firm_dir):
 			os.mkdir(self.firm_dir)
 			
-		os.rename(temp+'/nvstusb.fw', self.firm_dir+self.firm_name)
+		os.rename(temp +'/nvstusb.fw', self.firm_dir+self.firm_name)
 		
 		# Clearing our work directory
 		print "\nDeleting all files ..."

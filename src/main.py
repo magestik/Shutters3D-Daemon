@@ -16,18 +16,24 @@ import gobject
 
 class DaemonDBUS(dbus.service.Object):
 	def __init__(self):
-		bus_name = dbus.service.BusName('org.stereo3d.shutters', bus=dbus.SessionBus())
-		dbus.service.Object.__init__(self, bus_name, '/org/stereo3d/shutters')
+		try:
+			bus_name = dbus.service.BusName('org.stereo3d.shutters', bus=dbus.SessionBus())
+			dbus.service.Object.__init__(self, bus_name, '/org/stereo3d/shutters')
+			
+			self.glasses = nv3d.shutters() # Uploading firmware
+		
+		except Exception, e:
+			print "Error while starting daemon:", e
+			sys.exit()
 	
 	@dbus.service.method('org.stereo3d.shutters')
-	def start(self):
+	def start(self): # parameter rate ?
 		try:
-			self.glasses = nv3d.shutters()
-			self.glasses.set_rate(120)
-			print "Initialising glasses ..."
+			self.glasses.set_rate(120) # Hardcoded for 120Hz display
+			print "Setting glasses frame rate ..."
 			success = 1
 		except:
-			print "Initalisation failed !"
+			print "Rate setting failed !"
 			success = 0
 		
 		return success
@@ -63,8 +69,9 @@ class DaemonDBUS(dbus.service.Object):
 		return success
 
 if __name__ == "__main__":
+	DBusGMainLoop(set_as_default=True)
 	daemon = DaemonDBUS()
 	
 	loop = gobject.MainLoop()
-	print 'Listening'
+	print "Listening ..."
 	loop.run()
