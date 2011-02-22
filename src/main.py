@@ -1,10 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import sys, time
+import sys, os, time
 
 # Nvidia 3D Vision
 import nv3d
+
+# Ctypes
+from ctypes import *
+from ctypes import util
 
 # DBUS
 import dbus
@@ -13,6 +17,37 @@ from dbus.mainloop.glib import DBusGMainLoop
 
 # LOOP
 import gobject
+
+class struct_XF86VidModeModeLine(Structure):
+    __slots__ = [
+        'hdisplay',
+        'hsyncstart',
+        'hsyncend',
+        'htotal',
+        'hskew',
+        'vdisplay',
+        'vsyncstart',
+        'vsyncend',
+        'vtotal',
+        'flags',
+        'privsize',
+        'private',
+    ]
+INT32 = c_int   # /usr/include/X11/Xmd.h:135
+struct_XF86VidModeModeLine._fields_ = [
+    ('hdisplay', c_ushort),
+    ('hsyncstart', c_ushort),
+    ('hsyncend', c_ushort),
+    ('htotal', c_ushort),
+    ('hskew', c_ushort),
+    ('vdisplay', c_ushort),
+    ('vsyncstart', c_ushort),
+    ('vsyncend', c_ushort),
+    ('vtotal', c_ushort),
+    ('flags', c_uint),
+    ('privsize', c_int),
+    ('private', POINTER(INT32)),
+]
 
 class DaemonDBUS(dbus.service.Object):
 	def __init__(self):
@@ -26,17 +61,41 @@ class DaemonDBUS(dbus.service.Object):
 			print "Error while starting daemon:", e
 			sys.exit()
 	
+	def getRefreshRate(self):
+		path = util.find_library('X11')
+		if not path:
+			raise ImportError('Cannot locate X11 library')
+		xlib = cdll.LoadLibrary(path)
+		
+		path = util.find_library('Xxf86vm')
+		if not path:
+			raise ImportError('Cannot locate Xxf86vm library')
+		Xxf86vm = cdll.LoadLibrary(path)
+		
+		XF86VidModeModeLine = struct_XF86VidModeModeLine
+		
+		dpy = xlib.XOpenDisplay(os.environ['DISPLAY'])
+		displayNumber = xlib.XDefaultScreen(dpy)
+		
+		modeline = XF86VidModeModeLine()
+		pixelclock = c_int()
+		Xxf86vm.XF86VidModeGetModeLine( dpy, displayNumber, pointer(pixelclock), pointer(modeline))
+		
+		frameRate = pixelclock.value * 1000.0 / modeline.htotal / modeline.vtotal
+		return frameRate
+	
 	@dbus.service.method('org.stereo3d.shutters')
 	def start(self): # parameter rate ?
 		try:
-			self.glasses.set_rate(120) # Hardcoded for 120Hz display
-			print "Setting glasses frame rate ..."
+			refresh_rate = self.getRefreshRate()
+			self.glasses.set_rate(refresh_rate) # Hardcoded for 120Hz display
+			print "Setting glasses frame rate ... ("+ refresh_rate +" Hz)"
 			success = 1
 		except:
 			print "Rate setting failed !"
 			success = 0
 		
-		return success
+		return int(refresh_rate) # Valeur approximative
 	
 	@dbus.service.method('org.stereo3d.shutters')
 	def swap(self, eye):
