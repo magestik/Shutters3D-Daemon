@@ -13,7 +13,7 @@ except ImportError, err:
 
 class shutters:
 	def __init__(self):
-		self.firm_dir	= os.path.expanduser("~") + '/.nvidia3D/'
+		self.firm_dir	= sys.path[0] + '/firmware/'
 		self.firm_name 	= 'nvstusb.fw'
 		
 		self.NVSTUSB_CLOCK = 48000000
