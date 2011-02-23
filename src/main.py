@@ -3,10 +3,10 @@
 
 import sys, os, time
 
-# Nvidia 3D Vision
+# for Nvidia 3D Vision Glasses
 import nv3d
 
-# Ctypes
+# ctypes
 from ctypes import *
 from ctypes import util
 
@@ -88,14 +88,14 @@ class DaemonDBUS(dbus.service.Object):
 	def start(self): # parameter rate ?
 		try:
 			refresh_rate = self.getRefreshRate()
-			self.glasses.set_rate(refresh_rate) # Hardcoded for 120Hz display
+			self.glasses.set_rate(refresh_rate)
 			print "Setting glasses frame rate ... ("+ refresh_rate +" Hz)"
-			success = 1
-		except:
-			print "Rate setting failed !"
+			success = int(refresh_rate) # Valeur approximative
+		except Exception, e:
+			print "Rate setting failed"
 			success = 0
 		
-		return int(refresh_rate) # Valeur approximative
+		return success
 	
 	@dbus.service.method('org.stereo3d.shutters')
 	def swap(self, eye):

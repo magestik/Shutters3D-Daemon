@@ -41,7 +41,7 @@ class shutters:
 			time.sleep(1)
 			self.detect_device()
 		
-		self.get_keys() # Get Keys at the beginning ... Why ?
+		self.get_keys() # Get Keys at the beginning ... Why ? Found it in the Nvidia version ...
 		return
 	
 	def __del__(self):
