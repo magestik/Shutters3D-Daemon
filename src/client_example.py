@@ -1,10 +1,11 @@
-import dbus, sys
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+import dbus, sys, time
 
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
-
-import time
 
 class ShuttersGL:
 	def __init__(self):	
@@ -17,14 +18,14 @@ class ShuttersGL:
 		self.last_frame = 0
 		
 		try:
-			bus = dbus.SessionBus()
+			bus = dbus.SystemBus()
 			self.shutters = bus.get_object('org.stereo3d.shutters', '/org/stereo3d/shutters')
-		except:
-			raise("Can't connect to the daemon")
+		except Exception, e:
+			raise Exception(e)
 	
 	def __del__(self):
-		self.shutters.stop()
 		pass
+		#self.shutters.stop()
 	
 	def init_glasses(self):
 		self.refresh = self.shutters.start()
@@ -104,7 +105,7 @@ class ShuttersGL:
 try:
 	area = ShuttersGL()
 except Exception, e:
-	sys.exit(e)
+	sys.exit("Can't connect to the daemon: "+ str(e))
 else:
 	area.init_glasses()
 	area.init_glut()

@@ -1,4 +1,5 @@
 include COPYING
 include README
 include setup.py
+include scripts/org.stereo3d.shutters.conf
 recursive-include src *

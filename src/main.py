@@ -52,11 +52,10 @@ struct_XF86VidModeModeLine._fields_ = [
 class DaemonDBUS(dbus.service.Object):
 	def __init__(self):
 		try:
-			bus_name = dbus.service.BusName('org.stereo3d.shutters', bus=dbus.SessionBus())
+			bus_name = dbus.service.BusName('org.stereo3d.shutters', bus=dbus.SystemBus())
 			dbus.service.Object.__init__(self, bus_name, '/org/stereo3d/shutters')
 			
 			self.glasses = nv3d.shutters() # Uploading firmware
-		
 		except Exception, e:
 			print "Error while starting daemon:", e
 			sys.exit()
@@ -89,10 +88,10 @@ class DaemonDBUS(dbus.service.Object):
 		try:
 			refresh_rate = self.getRefreshRate()
 			self.glasses.set_rate(refresh_rate)
-			print "Setting glasses frame rate ... ("+ refresh_rate +" Hz)"
+			print "Setting glasses frame rate ... ("+ str(refresh_rate) +" Hz)"
 			success = int(refresh_rate) # Valeur approximative
 		except Exception, e:
-			print "Rate setting failed"
+			print "Rate setting failed", e
 			success = 0
 		
 		return success
@@ -118,7 +117,7 @@ class DaemonDBUS(dbus.service.Object):
 	@dbus.service.method('org.stereo3d.shutters')
 	def stop(self):
 		try:
-			self.glasses.__del__()
+			#self.glasses.__del__()
 			print "Releasing glasses ..."
 			success = 1
 		except:
