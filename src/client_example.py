@@ -24,8 +24,10 @@ class ShuttersGL:
 			raise Exception(e)
 	
 	def __del__(self):
-		pass
-		#self.shutters.stop()
+		try:
+			self.shutters.stop()
+		except:
+			pass # glass have probably not been initialised ... yet
 	
 	def init_glasses(self):
 		self.refresh = self.shutters.start()
@@ -110,4 +112,4 @@ else:
 	area.init_glasses()
 	area.init_glut()
 	
-area.__del__()
+# area.__del__() est appellé automatiquement
