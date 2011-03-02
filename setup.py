@@ -6,7 +6,7 @@ import glob
 if __name__ == "__main__":
 	share_files = glob.glob("src/*")
 	setup(  name         = 'shutters3d-syncdaemon',
-			version      = '0.1.5',
+			version      = '0.1.7',
 			description  = 'Stereo Glasses Controller',
 			author       = 'Magestik',
 			author_email = 'bastien@magestik.fr',
