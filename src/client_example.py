@@ -37,7 +37,7 @@ class ShuttersGL:
 		
 		try:
 			bus = dbus.SystemBus()
-			#self.shutters = bus.get_object('org.stereo3d.shutters', '/org/stereo3d/shutters')
+			self.shutters = bus.get_object('org.stereo3d.shutters', '/org/stereo3d/shutters')
 		except Exception, e:
 			raise Exception(e)
 	
@@ -88,10 +88,10 @@ class ShuttersGL:
 			self.sync()
 			
 			if self.inverteyes == 1:
-				#eye = self.shutters.swap('right')
+				eye = self.shutters.swap('right')
 				self.inverteyes = 0
 			else:
-				#eye = self.shutters.swap('left')
+				eye = self.shutters.swap('left')
 				self.inverteyes = 1
 
 			++self.i_counter
@@ -125,7 +125,7 @@ try:
 except Exception, e:
 	sys.exit("Can't connect to the daemon: "+ str(e))
 else:
-	#area.init_glasses()
+	area.init_glasses()
 	area.init_glut()
 	
 # area.__del__() est appellé automatiquement
